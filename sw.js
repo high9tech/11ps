@@ -1,6 +1,6 @@
-const CACHE_NAME = 'hightech-ps-v5';
+const CACHE_NAME = 'hightech-ps-v6';
 
-const CORE_ASSETS = [
+const ASSETS = [
   './',
   './index.html',
   './includes/style.css',
@@ -30,7 +30,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.allSettled(
-        CORE_ASSETS.map((asset) => cache.add(asset))
+        ASSETS.map((asset) => cache.add(asset))
       );
     })
   );
@@ -56,13 +56,7 @@ self.addEventListener('fetch', (event) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
-        }
-        return networkResponse;
-      }).catch(() => {
+      return fetch(event.request).catch(() => {
         if (event.request.mode === 'navigate') {
           return caches.match('./index.html');
         }
