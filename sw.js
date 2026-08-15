@@ -1,43 +1,21 @@
-const CACHE_NAME = 'hightech-ps-offline-v10';
-
+const CACHE_NAME = 'hightech-ps-v1';
 const ASSETS = [
   './',
   './index.html',
-  './includes/style.css',
-  './includes/script.js',
-  './includes/cat.jpg',
   './background.png',
-  './cache.manifest',
-  './manifest.json',
-  './src/main.js',
-  './src/loader.js',
-  './src/lapse.js',
-  './src/misc.js',
-  './src/netctrl.js',
-  './src/payload.bin',
-  './src/utils.mjs',
-  './src/worker.js',
-  './src/workers.js',
-  './src/ps4/constants.js',
-  './src/ps4/kernel.js',
-  './src/ps4/offsets.mjs',
-  './src/ps4/userland.js',
-  './src/ps4/userland.mjs'
+  './cache.manifest'
 ];
 
-self.addEventListener('install', (event) => {
-  self.skipWaiting();
-  event.waitUntil(
+self.addEventListener('install', (e) => {
+  e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return Promise.allSettled(
-        ASSETS.map((asset) => cache.add(asset))
-      );
-    })
+      return cache.addAll(ASSETS);
+    }).then(() => self.skipWaiting())
   );
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
@@ -50,21 +28,10 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
-        }
-        return networkResponse;
-      }).catch(() => {
-        return caches.match('./index.html') || caches.match('./');
-      });
+self.addEventListener('fetch', (e) => {
+  e.respondWith(
+    caches.match(e.request).then((response) => {
+      return response || fetch(e.request);
     })
   );
 });
