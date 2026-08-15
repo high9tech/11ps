@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hightech-ps-v13';
+const CACHE_NAME = 'hightech-ps-v14';
 
 const ASSETS = [
   'index.html',
@@ -7,6 +7,7 @@ const ASSETS = [
   'sw.js',
   'includes/style.css',
   'includes/script.js',
+  'includes/applicationCache.js',
   'includes/cat.jpg',
   'src/main.js',
   'src/loader.js',
