@@ -1,248 +1,51 @@
 <!DOCTYPE html>
-<html manifest="cache.manifest" lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" manifest="cache.manifest">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HIGH TECH PS - GoldHEN Host</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('background.png') no-repeat center center fixed;
-            background-size: cover;
-            color: #ffffff;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        /* شريط التخزين أعلى الصفحة */
-        .top-cache-container {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            padding: 12px 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            border-bottom: 2px solid #00d4ff;
-            text-align: center;
-            z-index: 100;
-        }
-
-        .cache-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #00d4ff;
-            margin-bottom: 6px;
-            letter-spacing: 1px;
-        }
-
-        .progress-wrapper {
-            width: 80%;
-            max-width: 700px;
-            margin: 0 auto;
-            background-color: rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            height: 18px;
-            overflow: hidden;
-            position: relative;
-            border: 1px solid rgba(0, 212, 255, 0.3);
-        }
-
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #0051ff, #00d4ff, #00ffaa);
-            transition: width 0.2s linear;
-            border-radius: 12px;
-        }
-
-        .cache-percentage {
-            font-size: 0.95rem;
-            font-weight: bold;
-            color: #ffffff;
-            margin-top: 4px;
-        }
-
-        /* الختم المائي في منتصف الصفحة */
-        .center-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-grow: 1;
-        }
-
-        .seal-button {
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(10, 25, 50, 0.85) 0%, rgba(0, 5, 15, 0.95) 100%);
-            border: 6px double #00d4ff;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.6), inset 0 0 25px rgba(0, 212, 255, 0.4);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            user-select: none;
-            backdrop-filter: blur(4px);
-            padding: 15px;
-        }
-
-        .seal-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 45px rgba(0, 212, 255, 0.9), inset 0 0 35px rgba(0, 212, 255, 0.6);
-            border-color: #00ffaa;
-        }
-
-        .seal-button:active {
-            transform: scale(0.98);
-        }
-
-        .seal-title {
-            font-size: 1.8rem;
-            font-weight: 900;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px #00d4ff, 2px 2px 4px #000;
-            line-height: 1.1;
-        }
-
-        .seal-divider {
-            width: 70%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
-            margin: 10px 0;
-        }
-
-        .seal-subtitle {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #ffcc00;
-            text-shadow: 0 0 8px rgba(255, 204, 0, 0.6), 1px 1px 3px #000;
-            letter-spacing: 1px;
-        }
-
-        .seal-fw {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #00ffaa;
-            margin-top: 8px;
-            text-shadow: 0 0 5px rgba(0, 255, 170, 0.8);
-            border: 1px solid rgba(0, 255, 170, 0.4);
-            padding: 3px 10px;
-            border-radius: 12px;
-            background: rgba(0, 255, 170, 0.1);
-        }
-
-        .footer-text {
-            padding-bottom: 15px;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HIGH TECH PS - Jailbreak Host</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#d4af37">
+  <link rel="stylesheet" href="includes/style.css">
 </head>
 <body>
 
-    <!-- شريط الكاش العلوي من 1 إلى 100 -->
-    <div class="top-cache-container">
-        <div id="cacheStatus" class="cache-title">جاري التخزين المؤقت...</div>
-        <div class="progress-wrapper">
-            <div id="cacheBar" class="progress-bar"></div>
-        </div>
-        <div id="cachePercent" class="cache-percentage">0%</div>
-    </div>
+  <!-- شريط التحميل العلوي للملفات والكاش -->
+  <div id="top-progress-container">
+    <div id="top-progress-bar"></div>
+    <span id="top-progress-text">0% - CACHING...</span>
+  </div>
 
-    <!-- الختم الكبير في المنتصف -->
-    <div class="center-wrapper">
-        <div class="seal-button" onclick="loadGoldHen()">
-            <div class="seal-title">HIGH TECH PS</div>
-            <div class="seal-divider"></div>
-            <div class="seal-subtitle">GOLD HEN</div>
-            <div class="seal-fw">Supported up to FW 11.02</div>
-        </div>
-    </div>
+  <!-- خلفية الشاشة الكاملة -->
+  <div class="full-bg">
+    <img src="background.png" alt="HIGH TECH PS" onerror="this.style.display='none';">
+  </div>
 
-    <div class="footer-text">HIGH TECH PS4 Host System &copy; 2026</div>
+  <!-- طبقة شفافة بسيطة لإظهار الخلفية بوضوح -->
+  <div class="overlay"></div>
 
-    <script>
-        // تسجيل الـ Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(function(err) {
-                console.log('SW Registration failed', err);
-            });
-        }
+  <!-- حاوية الزر المركزي (الختم الكبير) -->
+  <div class="main-card">
+    <button class="seal-btn" id="masterBtn">
+      <div class="seal-inner">
+        <div class="seal-title">HIGH TECH PS</div>
+        <div class="seal-divider"></div>
+        <div class="seal-subtitle">GOLD HEN</div>
+        <div class="seal-version">FW 5.05 - 11.02 SUPPORTED</div>
+      </div>
+    </button>
 
-        // تحكم شريط الكاش العلوي من 1% إلى 100%
-        var appCache = window.applicationCache;
-        var cacheStatus = document.getElementById('cacheStatus');
-        var cacheBar = document.getElementById('cacheBar');
-        var cachePercent = document.getElementById('cachePercent');
+    <pre id="console" class="console-box">Ready. Awaiting execution...</pre>
+  </div>
 
-        function updateProgress(percent) {
-            percent = Math.min(100, Math.max(1, percent));
-            cacheBar.style.width = percent + '%';
-            cachePercent.innerHTML = percent + '%';
-        }
-
-        appCache.addEventListener('checking', function() {
-            cacheStatus.innerHTML = "جاري التحقق من ملفات الكاش...";
-            updateProgress(5);
-        }, false);
-
-        appCache.addEventListener('downloading', function() {
-            cacheStatus.innerHTML = "جاري تحفيظ الكاش للاستخدام بدون إنترنت...";
-            updateProgress(10);
-        }, false);
-
-        appCache.addEventListener('progress', function(e) {
-            if (e.lengthComputable && e.total > 0) {
-                var percentage = Math.round((e.loaded / e.total) * 100);
-                updateProgress(percentage);
-            } else {
-                updateProgress(50);
-            }
-        }, false);
-
-        appCache.addEventListener('cached', function() {
-            updateProgress(100);
-            cacheStatus.innerHTML = "SUCCESSFUL CACHE";
-            cacheStatus.style.color = "#00ffaa";
-        }, false);
-
-        appCache.addEventListener('updateready', function() {
-            updateProgress(100);
-            appCache.swapCache();
-            cacheStatus.innerHTML = "SUCCESSFUL CACHE (UPDATED)";
-            cacheStatus.style.color = "#00ffaa";
-        }, false);
-
-        appCache.addEventListener('noupdate', function() {
-            updateProgress(100);
-            cacheStatus.innerHTML = "SUCCESSFUL CACHE";
-            cacheStatus.style.color = "#00ffaa";
-        }, false);
-
-        appCache.addEventListener('error', function() {
-            updateProgress(100);
-            cacheStatus.innerHTML = "SUCCESSFUL CACHE (OFFLINE READY)";
-            cacheStatus.style.color = "#00ffaa";
-        }, false);
-
-        function loadGoldHen() {
-            // يمكن ربط دالة الثغرة هنا عند ضغط الختم
-            console.log("Loading GoldHEN payload...");
-        }
-    </script>
+  <script src="src/main.js"></script>
+  <script src="includes/script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { scope: './' });
+      });
+    }
+  </script>
 </body>
 </html>
