@@ -6,6 +6,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const cacheDot = document.getElementById("cache-dot");
 
   if (UAElement) {
+
+  
+   // عرض معلومات متصفح البلايستيشن
+
+   
     UAElement.innerText = "PlayStation / " + navigator.userAgent;
   }
 
