@@ -10,19 +10,16 @@
 </head>
 <body>
 
-  <!-- خلفية الشاشة الكاملة -->
   <div class="full-bg">
     <img src="background.png" alt="HIGH TECH PS" onerror="this.style.display='none';">
   </div>
 
   <div class="overlay"></div>
 
-  <!-- الكارت الرئيسي -->
   <div class="main-card">
     <div class="brand-title">HIGH TECH PS</div>
     <div class="brand-subtitle" id="UA">PlayStation Maintenance & All-in-One Exploit</div>
 
-    <!-- حالة الكاش الأوفلاين -->
     <div class="cache-status">
       <span>حالة التخزين الأوفلاين:</span>
       <div>
@@ -31,7 +28,6 @@
       </div>
     </div>
 
-    <!-- الزر الرئيسي الموحد -->
     <div class="action-wrapper">
       <button class="btn-gold-trigger" id="masterBtn">
         <span class="btn-text">تفعيل التعديلة الموحدة</span>
@@ -39,30 +35,21 @@
       </button>
     </div>
 
-    <!-- شاشة الملاحظات والـ Console -->
     <pre id="console" class="console-box">Ready. Awaiting execution...</pre>
   </div>
 
   <script src="src/main.js"></script>
   <script src="includes/script.js"></script>
   <script>
-        // تفعيل Service Worker للكاش بدون إنترنت
-
-
+    // تسجيل Service Worker لنطاق الجذر كاملاً
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js', { scope: './' })
-          .then(() => {
-            const statusText = document.getElementById('cache-status-text');
-            const dot = document.getElementById('cache-dot');
-            if (statusText) statusText.innerText = 'جاهز (Offline Ready)';
-            if (dot) dot.classList.add('active');
-          })
-          .catch(() => {
-            const statusText = document.getElementById('cache-status-text');
-            if (statusText) statusText.innerText = 'غير مفعل';
-          });
-      });
+      navigator.serviceWorker.register('./sw.js', { scope: './' })
+        .then((reg) => {
+          console.log('SW Registered:', reg);
+        })
+        .catch((err) => {
+          console.log('SW Error:', err);
+        });
     }
   </script>
 </body>
