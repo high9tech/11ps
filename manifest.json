@@ -1,15 +1,27 @@
-{
-  "name": "HIGH TECH PS - Jailbreak Host",
-  "short_name": "HIGH TECH PS",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#0d0d0d",
-  "theme_color": "#d4af37",
-  "icons": [
-    {
-      "src": "./includes/cat.jpg",
-      "sizes": "192x192",
-      "type": "image/jpeg"
-    }
-  ]
-}
+CACHE MANIFEST
+# v10.0.0 - HIGH TECH PS FULL OFFLINE
+
+index.html
+background.png
+manifest.json
+sw.js
+includes/style.css
+includes/script.js
+includes/cat.jpg
+src/main.js
+src/loader.js
+src/lapse.js
+src/misc.js
+src/netctrl.js
+src/payload.bin
+src/utils.mjs
+src/worker.js
+src/workers.js
+src/ps4/constants.js
+src/ps4/kernel.js
+src/ps4/offsets.mjs
+src/ps4/userland.js
+src/ps4/userland.mjs
+
+NETWORK:
+*
