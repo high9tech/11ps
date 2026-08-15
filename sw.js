@@ -1,7 +1,6 @@
-const CACHE_NAME = 'hightech-ps-v4';
+const CACHE_NAME = 'hightech-ps-v5';
 
-// قائمة بجميع ملفات المشروع المطلوبة للتخزين الأوفلاين
-const ASSETS = [
+const CORE_ASSETS = [
   './',
   './index.html',
   './includes/style.css',
@@ -23,39 +22,20 @@ const ASSETS = [
   './src/ps4/kernel.js',
   './src/ps4/offsets.mjs',
   './src/ps4/userland.js',
-  './src/ps4/userland.mjs',
-  './src/ps4/patches/1000.bin',
-  './src/ps4/patches/1050.bin',
-  './src/ps4/patches/1100.bin',
-  './src/ps4/patches/1102.bin',
-  './src/ps4/patches/600.bin',
-  './src/ps4/patches/620.bin',
-  './src/ps4/patches/650.bin',
-  './src/ps4/patches/670.bin',
-  './src/ps4/patches/700.bin',
-  './src/ps4/patches/750.bin',
-  './src/ps4/patches/800.bin',
-  './src/ps4/patches/850.bin',
-  './src/ps4/patches/900.bin',
-  './src/ps4/patches/903.bin',
-  './src/ps4/patches/950.bin'
+  './src/ps4/userland.mjs'
 ];
 
-// مرحلة التثبيت - كاش الملفات مع تجنب التوقف عند فقدان أي ملف
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.allSettled(
-        ASSETS.map((asset) =>
-          cache.add(asset).catch((err) => console.warn('لم يتم كاش الملف:', asset, err))
-        )
+        CORE_ASSETS.map((asset) => cache.add(asset))
       );
     })
   );
 });
 
-// مرحلة التنشيط - حذف الكاش القديم
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -70,14 +50,19 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// مرحلة الجلب - تقديم الملفات من الكاش في حالة قطع الإنترنت
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(event.request).catch(() => {
+      return fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+        }
+        return networkResponse;
+      }).catch(() => {
         if (event.request.mode === 'navigate') {
           return caches.match('./index.html');
         }
