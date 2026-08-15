@@ -1,37 +1,25 @@
-const CACHE_NAME = 'hightech-ps4-v1';
-const ASSETS = [
-  './',
-  './index.html',
-  './background.png',
-  './cache.manifest'
-];
+window.applicationCache.addEventListener('progress', function(e) {
+  if (e.lengthComputable) {
+    var percentage = Math.round((e.loaded / e.total) * 100);
+    document.getElementById('top-progress-bar').style.width = percentage + '%';
+    document.getElementById('top-progress-text').innerText = percentage + '% - CACHING FILES...';
+  }
+}, false);
 
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    }).then(() => self.skipWaiting())
-  );
-});
+window.applicationCache.addEventListener('cached', function() {
+  document.getElementById('top-progress-bar').style.width = '100%';
+  document.getElementById('top-progress-text').innerText = '100% - SUCCESSFUL CACHE (OFFLINE READY)';
+}, false);
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
-});
+window.applicationCache.addEventListener('noupdate', function() {
+  document.getElementById('top-progress-bar').style.width = '100%';
+  document.getElementById('top-progress-text').innerText = '100% - SUCCESSFUL CACHE (OFFLINE READY)';
+}, false);
 
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
-    })
-  );
-});
+window.applicationCache.addEventListener('error', function() {
+  // في حال كان المحمول offline بالفعل
+  if (!navigator.onLine) {
+    document.getElementById('top-progress-bar').style.width = '100%';
+    document.getElementById('top-progress-text').innerText = 'OFFLINE MODE ACTIVE';
+  }
+}, false);
