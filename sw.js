@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hightech-ps-v14';
+const CACHE_NAME = 'hightech-ps-v15';
 
 const ASSETS = [
   'index.html',
@@ -40,36 +40,38 @@ const ASSETS = [
   'src/ps4/patches/1102.bin'
 ];
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', function(event) {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    caches.open(CACHE_NAME).then(function(cache) {
       return cache.addAll(ASSETS);
     })
   );
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', function(event) {
   event.waitUntil(
-    caches.keys().then((keys) => {
+    caches.keys().then(function(keys) {
       return Promise.all(
-        keys.map((key) => {
+        keys.map(function(key) {
           if (key !== CACHE_NAME) {
             return caches.delete(key);
           }
         })
       );
-    }).then(() => self.clients.claim())
+    }).then(function() {
+      return self.clients.claim();
+    })
   );
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', function(event) {
   event.respondWith(
-    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
+    caches.match(event.request, { ignoreSearch: true }).then(function(cachedResponse) {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(event.request).catch(() => {
+      return fetch(event.request).catch(function() {
         return caches.match('index.html');
       });
     })
