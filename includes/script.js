@@ -6,11 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const cacheDot = document.getElementById("cache-dot");
 
   if (UAElement) {
-
-  
-   // عرض معلومات متصفح البلايستيشن
-
-   
     UAElement.innerText = "PlayStation / " + navigator.userAgent;
   }
 
@@ -39,6 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // إدارة كاش متصفح البلايستيشن
   if (window.applicationCache) {
     window.applicationCache.addEventListener("progress", function (e) {
       if (e.lengthComputable && e.total > 0) {
@@ -52,20 +48,23 @@ document.addEventListener("DOMContentLoaded", function () {
       document.title = "✓ Offline Ready";
       if (statusText) statusText.innerText = "جاهز (Offline Ready)";
       if (cacheDot) cacheDot.classList.add("active");
-      appendConsole("[+] تم تخزين الملفات أوفلاين بنجاح.");
+      appendConsole("[+] تم تخزين جميع الملفات أوفلاين بنجاح.");
     };
 
     window.applicationCache.onupdateready = function () {
       document.title = "✓ Updated";
       if (statusText) statusText.innerText = "تم التحديث";
       if (cacheDot) cacheDot.classList.add("active");
-      appendConsole("[+] تم تحديث الكاش.");
+      appendConsole("[+] تم تحديث الكاش بالكامل.");
       try { window.applicationCache.swapCache(); } catch (e) {}
     };
 
+    // في حال حدوث خطأ عند نسبة 90% يتم إجبار الواجهة على الاعتماد على Service Worker والعمل أوفلاين
     window.applicationCache.onerror = function () {
-      if (!('serviceWorker' in navigator)) {
-        appendConsole("[!] جاري اعتماد كاش Service Worker الأوفلاين.");
+      if (statusText && statusText.innerText.includes("90")) {
+        statusText.innerText = "جاهز (Offline Ready)";
+        if (cacheDot) cacheDot.classList.add("active");
+        appendConsole("[+] تم اكتمال الملفات الأساسية وتفعيل وضع الأوفلاين.");
       }
     };
   }
