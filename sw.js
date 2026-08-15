@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hightech-ps-v2';
+const CACHE_NAME = 'hightech-ps-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -27,8 +27,11 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
+      // تجنب توقف التحميل عند فقدان أي ملف
       return Promise.allSettled(
-        ASSETS.map((asset) => cache.add(asset))
+        ASSETS.map((asset) => 
+          cache.add(asset).catch((err) => console.warn('فشل كاش الملف:', asset, err))
+        )
       );
     })
   );
