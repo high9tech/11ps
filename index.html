@@ -1,53 +1,150 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" manifest="cache.manifest">
+<html manifest="cache.manifest" lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HIGH TECH PS - Jailbreak Host</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#d4af37">
-  <link rel="stylesheet" href="includes/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIGH TECH PS4 11.00 FW</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            /* إظهار صورة الخلفية بشكل طبيعي مع طبقة شفافة بسيطة جداً */
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('background.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(3px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #00d4ff;
+        }
+
+        #status {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            height: 25px;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #0051ff);
+            transition: width 0.3s ease-in-out;
+            border-radius: 20px;
+        }
+
+        #percentage {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
-  
-  <!-- خلفية الشاشة الكاملة -->
 
-  <div class="full-bg">
-    <img src="background.png" alt="HIGH TECH PS" onerror="this.style.display='none';">
-  </div>
-
-  <div class="overlay"></div>
-
-  <div class="main-card">
-    <div class="brand-title">HIGH TECH PS</div>
-    <div class="brand-subtitle" id="UA">PlayStation Maintenance & All-in-One Exploit</div>
-
-    <div class="cache-status">
-      <span>حالة التخزين الأوفلاين:</span>
-      <div>
-        <span id="cache-status-text">جاري التحقق...</span>
-        <span class="status-dot" id="cache-dot"></span>
-      </div>
+    <div class="container">
+        <h1>HIGH TECH PS4 11.00</h1>
+        <div id="status">جاري تحضير ملفات التعديل...</div>
+        
+        <div class="progress-bar-container">
+            <div id="myBar" class="progress-bar"></div>
+        </div>
+        
+        <div id="percentage">0%</div>
     </div>
 
-    <div class="action-wrapper">
-      <button class="btn-gold-trigger" id="masterBtn">
-        <span class="btn-text">تفعيل التعديلة الموحدة</span>
-        <span class="btn-subtext">HIGH TECH PS / Jailbreak</span>
-      </button>
-    </div>
+    <script>
+        // تفعيل الـ Service Worker لضمان العمل بدون إنترنت كلياً
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(function(reg) {
+                console.log('Service Worker Registered Successfully', reg);
+            }).catch(function(err) {
+                console.log('Service Worker Failed', err);
+            });
+        }
 
-    <pre id="console" class="console-box">Ready. Awaiting execution...</pre>
-  </div>
+        // إدارة التخزين المؤقت (Cache Manifest Manager)
+        var appCache = window.applicationCache;
+        var statusDiv = document.getElementById('status');
+        var myBar = document.getElementById('myBar');
+        var percentageDiv = document.getElementById('percentage');
 
-  <script src="src/main.js"></script>
-  <script src="includes/script.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js', { scope: './' });
-      });
-    }
-  </script>
+        function updateProgress(percent) {
+            myBar.style.width = percent + '%';
+            percentageDiv.innerHTML = percent + '%';
+        }
+
+        appCache.addEventListener('checking', function() {
+            statusDiv.innerHTML = "جاري التحقق من التحديثات...";
+        }, false);
+
+        appCache.addEventListener('downloading', function() {
+            statusDiv.innerHTML = "جاري تحفيظ الملفات للعمل بدون إنترنت...";
+        }, false);
+
+        appCache.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                var percentage = Math.round((e.loaded / e.total) * 100);
+                updateProgress(percentage);
+            } else {
+                // في حال عدم حساب الطول بدقة لتفادي الوقوف عند 90%
+                updateProgress(95);
+            }
+        }, false);
+
+        appCache.addEventListener('cached', function() {
+            updateProgress(100);
+            statusDiv.innerHTML = "تم تحفيظ الكاش بنجاح! يمكنك الآن إغلاق النت واستخدام الصفحة أوفلاين.";
+        }, false);
+
+        appCache.addEventListener('updateready', function() {
+            updateProgress(100);
+            appCache.swapCache();
+            statusDiv.innerHTML = "تم تحديث الملفات بنجاح!";
+        }, false);
+
+        appCache.addEventListener('noupdate', function() {
+            updateProgress(100);
+            statusDiv.innerHTML = "الصفحة جاهزة ومحفوظة للعمل بدون إنترنت (Offline Ready)";
+        }, false);
+
+        appCache.addEventListener('error', function() {
+            // في حال حدوث خطأ أو التحميل أوفلاين سابقاً
+            updateProgress(100);
+            statusDiv.innerHTML = "الصفحة تعمل الآن في وضع الأوفلاين (بدون إنترنت)";
+        }, false);
+    </script>
 </body>
 </html>
