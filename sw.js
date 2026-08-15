@@ -9,14 +9,29 @@ const ASSETS = [
   './background.png',
   './cache.manifest',
   './manifest.json',
-  './src/main.js'
+  './src/main.js',
+  './src/loader.js',
+  './src/lapse.js',
+  './src/misc.js',
+  './src/netctrl.js',
+  './src/payload.bin',
+  './src/utils.mjs',
+  './src/worker.js',
+  './src/workers.js',
+  './src/ps4/constants.js',
+  './src/ps4/kernel.js',
+  './src/ps4/offsets.mjs',
+  './src/ps4/userland.js',
+  './src/ps4/userland.mjs'
 ];
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
+      return Promise.allSettled(
+        ASSETS.map((asset) => cache.add(asset))
+      );
     })
   );
 });
@@ -35,15 +50,19 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// التعامل مع طلبات التصفح أوفلاين
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(event.request).catch(() => {
-        // عند انقطاع الإنترنت تماماً، يتم إرجاع الصفحة الرئيسية المخزنة
+      return fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+        }
+        return networkResponse;
+      }).catch(() => {
         return caches.match('./index.html') || caches.match('./');
       });
     })
