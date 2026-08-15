@@ -26,21 +26,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // AppCache Event Listeners
+  // متابعة تقدم AppCache
   if (window.applicationCache) {
     window.applicationCache.addEventListener("progress", function (e) {
-      const percent = Math.round((e.loaded / e.total) * 100);
-      document.title = "Caching: " + percent + "%";
+      if (e.lengthComputable && e.total > 0) {
+        const percent = Math.round((e.loaded / e.total) * 100);
+        document.title = "Caching: " + percent + "%";
+      }
     }, false);
 
     window.applicationCache.oncached = function () {
       document.title = "✓ Offline Ready";
-      appendConsole("[+] Application cached successfully.");
+      const statusText = document.getElementById('cache-status-text');
+      const dot = document.getElementById('cache-dot');
+      if (statusText) statusText.innerText = 'جاهز (Offline Ready)';
+      if (dot) dot.classList.add('active');
+      appendConsole("[+] تم تخزين الملفات أوفلاين بنجاح.");
     };
 
     window.applicationCache.onupdateready = function () {
       document.title = "✓ Updated";
-      appendConsole("[+] Cache updated.");
+      window.applicationCache.swapCache();
+      location.reload();
+    };
+
+    window.applicationCache.onerror = function () {
+      appendConsole("[!] خطأ في كاش AppCache، يرجى إعادة التحميل.");
     };
   }
 });
