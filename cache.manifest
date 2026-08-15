@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# v13.0 - HIGH TECH PS OFFLINE FIX
+# v14.0 - HIGH TECH PS FULL OFFLINE FIX WITH APPLICATIONCACHE JS
 
 CACHE:
 index.html
@@ -8,6 +8,7 @@ manifest.json
 sw.js
 includes/style.css
 includes/script.js
+includes/applicationCache.js
 includes/cat.jpg
 src/main.js
 src/loader.js
