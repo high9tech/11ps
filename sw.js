@@ -1,4 +1,6 @@
-const CACHE_NAME = 'hightech-ps-v3';
+const CACHE_NAME = 'hightech-ps-v4';
+
+// قائمة بجميع ملفات المشروع المطلوبة للتخزين الأوفلاين
 const ASSETS = [
   './',
   './index.html',
@@ -39,17 +41,21 @@ const ASSETS = [
   './src/ps4/patches/950.bin'
 ];
 
+// مرحلة التثبيت - كاش الملفات مع تجنب التوقف عند فقدان أي ملف
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.allSettled(
-        ASSETS.map((asset) => cache.add(asset).catch(() => {}))
+        ASSETS.map((asset) =>
+          cache.add(asset).catch((err) => console.warn('لم يتم كاش الملف:', asset, err))
+        )
       );
     })
   );
 });
 
+// مرحلة التنشيط - حذف الكاش القديم
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -64,10 +70,14 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// مرحلة الجلب - تقديم الملفات من الكاش في حالة قطع الإنترنت
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request).catch(() => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(event.request).catch(() => {
         if (event.request.mode === 'navigate') {
           return caches.match('./index.html');
         }
