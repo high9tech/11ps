@@ -1,6 +1,6 @@
-const CACHE_NAME = 'hightech-ps-v6';
+const CACHE_NAME = 'hightech-ps-v9';
 
-const ASSETS = [
+const CORE_ASSETS = [
   './',
   './index.html',
   './includes/style.css',
@@ -9,20 +9,7 @@ const ASSETS = [
   './background.png',
   './cache.manifest',
   './manifest.json',
-  './src/main.js',
-  './src/loader.js',
-  './src/lapse.js',
-  './src/misc.js',
-  './src/netctrl.js',
-  './src/payload.bin',
-  './src/utils.mjs',
-  './src/worker.js',
-  './src/workers.js',
-  './src/ps4/constants.js',
-  './src/ps4/kernel.js',
-  './src/ps4/offsets.mjs',
-  './src/ps4/userland.js',
-  './src/ps4/userland.mjs'
+  './src/main.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -30,7 +17,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.allSettled(
-        ASSETS.map((asset) => cache.add(asset))
+        CORE_ASSETS.map((asset) => cache.add(asset))
       );
     })
   );
@@ -56,7 +43,13 @@ self.addEventListener('fetch', (event) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(event.request).catch(() => {
+      return fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+        }
+        return networkResponse;
+      }).catch(() => {
         if (event.request.mode === 'navigate') {
           return caches.match('./index.html');
         }
