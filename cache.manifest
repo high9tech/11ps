@@ -1,27 +1,10 @@
 CACHE MANIFEST
-# v10.0.0 - HIGH TECH PS FULL OFFLINE
+# v1.0.2 - HIGH TECH 11.00 FW
 
+CACHE:
 index.html
 background.png
-manifest.json
 sw.js
-includes/style.css
-includes/script.js
-includes/cat.jpg
-src/main.js
-src/loader.js
-src/lapse.js
-src/misc.js
-src/netctrl.js
-src/payload.bin
-src/utils.mjs
-src/worker.js
-src/workers.js
-src/ps4/constants.js
-src/ps4/kernel.js
-src/ps4/offsets.mjs
-src/ps4/userland.js
-src/ps4/userland.mjs
 
 NETWORK:
 *
