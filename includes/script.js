@@ -2,11 +2,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const masterBtn = document.getElementById("masterBtn");
   const UAElement = document.getElementById("UA");
   const consoleBox = document.getElementById("console");
+  const statusText = document.getElementById("cache-status-text");
+  const cacheDot = document.getElementById("cache-dot");
 
+  // عرض معلومات متصفح البلايستيشن
   if (UAElement) {
-    UAElement.innerText = navigator.userAgent;
+    UAElement.innerText = "PlayStation / " + navigator.userAgent;
   }
 
+  // دالة طباعة الرسائل في شاشة الـ Console
   function appendConsole(msg) {
     if (consoleBox) {
       consoleBox.textContent += "\n" + msg;
@@ -14,44 +18,66 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // معالجة الضغط على الزر الذهبي الموحد
   if (masterBtn) {
     masterBtn.addEventListener("click", function () {
       masterBtn.disabled = true;
-      appendConsole("[*] Executing Jailbreak...");
+      appendConsole("[*] جاري بدء تفعيل التعديلة الموحدة...");
+
+      // استدعاء دالة doJb الخاصة بكود الثغرة الرئيسي إن وجدت
       if (typeof doJb === "function") {
-        doJb();
+        try {
+          doJb();
+        } catch (err) {
+          appendConsole("[!] حدث خطأ أثناء تنفيذ الثغرة: " + err.message);
+          masterBtn.disabled = false;
+        }
       } else {
-        appendConsole("[!] Main trigger routine initialized.");
+        appendConsole("[!] تم إرسال أمر التفعيل، بانتظار استجابة الثغرة...");
       }
     });
   }
 
-  // متابعة تقدم AppCache
+  // إدارة التخزين الأوفلاين عبر AppCache للمتصفحات القديمة
   if (window.applicationCache) {
+    window.applicationCache.addEventListener("checking", function () {
+      appendConsole("[*] جاري التحقق من كاش الملفات...");
+    }, false);
+
+    window.applicationCache.addEventListener("downloading", function () {
+      appendConsole("[*] جاري تنزيل ملفات الكاش للحفظ أوفلاين...");
+    }, false);
+
     window.applicationCache.addEventListener("progress", function (e) {
       if (e.lengthComputable && e.total > 0) {
         const percent = Math.round((e.loaded / e.total) * 100);
         document.title = "Caching: " + percent + "%";
+        if (statusText) statusText.innerText = "جاري التحميل: " + percent + "%";
       }
     }, false);
 
     window.applicationCache.oncached = function () {
       document.title = "✓ Offline Ready";
-      const statusText = document.getElementById('cache-status-text');
-      const dot = document.getElementById('cache-dot');
-      if (statusText) statusText.innerText = 'جاهز (Offline Ready)';
-      if (dot) dot.classList.add('active');
+      if (statusText) statusText.innerText = "جاهز (Offline Ready)";
+      if (cacheDot) cacheDot.classList.add("active");
       appendConsole("[+] تم تخزين الملفات أوفلاين بنجاح.");
     };
 
     window.applicationCache.onupdateready = function () {
       document.title = "✓ Updated";
-      window.applicationCache.swapCache();
-      location.reload();
+      if (statusText) statusText.innerText = "تم التحديث";
+      if (cacheDot) cacheDot.classList.add("active");
+      appendConsole("[+] تم تحديث الكاش. أعد تحميل الصفحة لتطبيق التحديث.");
+      try {
+        window.applicationCache.swapCache();
+      } catch (e) {}
     };
 
     window.applicationCache.onerror = function () {
-      appendConsole("[!] خطأ في كاش AppCache، يرجى إعادة التحميل.");
+      // في حالة وجود Service Worker آمن، نتجاهل خطأ AppCache
+      if (!('serviceWorker' in navigator)) {
+        appendConsole("[!] خطأ في جلب الكاش، تأكد من وجود جميع الملفات.");
+      }
     };
   }
 });
