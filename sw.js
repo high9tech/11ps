@@ -1,21 +1,58 @@
-const CACHE_NAME = 'hightech-ps-v1';
+const CACHE_NAME = 'hightech-ps-v11';
+
 const ASSETS = [
   './',
   './index.html',
+  './includes/style.css',
+  './includes/script.js',
+  './includes/cat.jpg',
   './background.png',
-  './cache.manifest'
+  './cache.manifest',
+  './manifest.json',
+  './src/main.js',
+  './src/loader.js',
+  './src/lapse.js',
+  './src/misc.js',
+  './src/netctrl.js',
+  './src/payload.bin',
+  './src/utils.mjs',
+  './src/worker.js',
+  './src/workers.js',
+  './src/ps4/constants.js',
+  './src/ps4/kernel.js',
+  './src/ps4/offsets.mjs',
+  './src/ps4/userland.js',
+  './src/ps4/userland.mjs',
+  './src/ps4/patches/600.bin',
+  './src/ps4/patches/620.bin',
+  './src/ps4/patches/650.bin',
+  './src/ps4/patches/670.bin',
+  './src/ps4/patches/700.bin',
+  './src/ps4/patches/750.bin',
+  './src/ps4/patches/800.bin',
+  './src/ps4/patches/850.bin',
+  './src/ps4/patches/900.bin',
+  './src/ps4/patches/903.bin',
+  './src/ps4/patches/950.bin',
+  './src/ps4/patches/1000.bin',
+  './src/ps4/patches/1050.bin',
+  './src/ps4/patches/1100.bin',
+  './src/ps4/patches/1102.bin'
 ];
 
-self.addEventListener('install', (e) => {
-  e.waitUntil(
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
+  event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    }).then(() => self.skipWaiting())
+      return Promise.allSettled(
+        ASSETS.map((asset) => cache.add(asset))
+      );
+    })
   );
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
@@ -28,10 +65,10 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
-    })
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request);
+    }).catch(() => caches.match('./index.html'))
   );
 });
