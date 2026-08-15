@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hightech-ps-v11';
+const CACHE_NAME = 'hightech-ps-v12';
 
 const ASSETS = [
   './',
@@ -45,7 +45,13 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return Promise.allSettled(
-        ASSETS.map((asset) => cache.add(asset))
+        ASSETS.map((asset) => 
+          fetch(asset).then((response) => {
+            if (response.ok) {
+              return cache.put(asset, response);
+            }
+          }).catch(() => {})
+        )
       );
     })
   );
