@@ -46,28 +46,20 @@
   <script src="src/main.js"></script>
   <script src="includes/script.js"></script>
   <script>
-    // تفعيل Service Worker للكاش بدون إنترنت
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js', { scope: './' })
-          .then((reg) => {
+          .then(() => {
             const statusText = document.getElementById('cache-status-text');
             const dot = document.getElementById('cache-dot');
             if (statusText) statusText.innerText = 'جاهز (Offline Ready)';
             if (dot) dot.classList.add('active');
           })
-          .catch((err) => {
+          .catch(() => {
             const statusText = document.getElementById('cache-status-text');
             if (statusText) statusText.innerText = 'غير مفعل';
-            console.error('SW Error:', err);
           });
       });
-    } else if (window.applicationCache) {
-      // دعم AppCache للمتصفحات القديمة
-      const statusText = document.getElementById('cache-status-text');
-      const dot = document.getElementById('cache-dot');
-      if (statusText) statusText.innerText = 'جاهز (AppCache)';
-      if (dot) dot.classList.add('active');
     }
   </script>
 </body>
