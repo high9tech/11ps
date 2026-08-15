@@ -9,8 +9,6 @@
   <link rel="stylesheet" href="includes/style.css">
 </head>
 <body>
-  <!-- خلفية الشاشة الكاملة -->
-
 
   <div class="full-bg">
     <img src="background.png" alt="HIGH TECH PS" onerror="this.style.display='none';">
@@ -43,15 +41,10 @@
   <script src="src/main.js"></script>
   <script src="includes/script.js"></script>
   <script>
-    // تسجيل Service Worker لنطاق الجذر كاملاً
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js', { scope: './' })
-        .then((reg) => {
-          console.log('SW Registered:', reg);
-        })
-        .catch((err) => {
-          console.log('SW Error:', err);
-        });
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { scope: './' });
+      });
     }
   </script>
 </body>
