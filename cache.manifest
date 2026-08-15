@@ -1,12 +1,10 @@
 CACHE MANIFEST
-# v1.0.3 - HIGH TECH PS4 11.00 Host
-# Updated: 2026
+# v1.0.4 - HIGH TECH PS GoldHEN Host
 
 CACHE:
 index.html
 background.png
 sw.js
 
-# Network fallback (يتيح اتصال الإنترنت إذا كان متوفراً دون إيقاف الكاش)
 NETWORK:
 *
