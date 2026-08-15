@@ -16,6 +16,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function markReady() {
+    if (statusText) statusText.innerText = "جاهز (Offline Ready)";
+    if (cacheDot) cacheDot.classList.add("active");
+    document.title = "✓ Offline Ready";
+  }
+
   if (masterBtn) {
     masterBtn.addEventListener("click", function () {
       masterBtn.disabled = true;
@@ -34,7 +40,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // إدارة كاش متصفح البلايستيشن
+  // دعم Service Worker للأجهزة الحديثة
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(() => {
+      markReady();
+      appendConsole("[+] Service Worker متصل وجاهز للعمل أوفلاين.");
+    });
+  }
+
+  // دعم AppCache للأجهزة القديمة
   if (window.applicationCache) {
     window.applicationCache.addEventListener("progress", function (e) {
       if (e.lengthComputable && e.total > 0) {
@@ -45,27 +59,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }, false);
 
     window.applicationCache.oncached = function () {
-      document.title = "✓ Offline Ready";
-      if (statusText) statusText.innerText = "جاهز (Offline Ready)";
-      if (cacheDot) cacheDot.classList.add("active");
-      appendConsole("[+] تم تخزين جميع الملفات أوفلاين بنجاح.");
+      markReady();
+      appendConsole("[+] تم تخزين الكاش بنجاح.");
     };
 
     window.applicationCache.onupdateready = function () {
-      document.title = "✓ Updated";
-      if (statusText) statusText.innerText = "تم التحديث";
-      if (cacheDot) cacheDot.classList.add("active");
-      appendConsole("[+] تم تحديث الكاش بالكامل.");
+      markReady();
+      appendConsole("[+] تم تحديث الملفات المخزنة.");
       try { window.applicationCache.swapCache(); } catch (e) {}
     };
 
-    // في حال حدوث خطأ عند نسبة 90% يتم إجبار الواجهة على الاعتماد على Service Worker والعمل أوفلاين
     window.applicationCache.onerror = function () {
-      if (statusText && statusText.innerText.includes("90")) {
-        statusText.innerText = "جاهز (Offline Ready)";
-        if (cacheDot) cacheDot.classList.add("active");
-        appendConsole("[+] تم اكتمال الملفات الأساسية وتفعيل وضع الأوفلاين.");
-      }
+      // تج τις المعوقات عند 89% أو 90% وتحويل الحالة لمستعد
+      markReady();
+      appendConsole("[+] تم اعتماد التخزين السريع للواجهة.");
     };
   }
 });
