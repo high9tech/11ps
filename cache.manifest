@@ -1,6 +1,7 @@
 CACHE MANIFEST
-# v12.0 - HIGH TECH PS FIX CACHE 100%
+# v13.0 - HIGH TECH PS OFFLINE FIX
 
+CACHE:
 index.html
 background.png
 manifest.json
@@ -40,3 +41,6 @@ src/ps4/patches/1102.bin
 
 NETWORK:
 *
+
+SETTINGS:
+prefer-online
