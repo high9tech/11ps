@@ -16,10 +16,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function markReady() {
-    if (statusText) statusText.innerText = "جاهز (Offline Ready)";
+  function setReady() {
+    if (statusText) statusText.innerText = "جاهز 100% (Offline Ready)";
     if (cacheDot) cacheDot.classList.add("active");
-    document.title = "✓ Offline Ready";
+    document.title = "✓ 100% Offline Ready";
   }
 
   if (masterBtn) {
@@ -40,39 +40,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // دعم Service Worker للأجهزة الحديثة
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready.then(() => {
-      markReady();
-      appendConsole("[+] Service Worker متصل وجاهز للعمل أوفلاين.");
-    });
-  }
-
-  // دعم AppCache للأجهزة القديمة
+  // حساب العداد التراكمي من 1 إلى 100
   if (window.applicationCache) {
     window.applicationCache.addEventListener("progress", function (e) {
       if (e.lengthComputable && e.total > 0) {
         const percent = Math.round((e.loaded / e.total) * 100);
         document.title = "Caching: " + percent + "%";
-        if (statusText) statusText.innerText = "جاري التحميل: " + percent + "%";
+        if (statusText) statusText.innerText = "جاري التخزين: " + percent + "%";
       }
     }, false);
 
     window.applicationCache.oncached = function () {
-      markReady();
-      appendConsole("[+] تم تخزين الكاش بنجاح.");
+      setReady();
+      appendConsole("[+] تم اكتمال التخزين بنجاح (100%).");
     };
 
     window.applicationCache.onupdateready = function () {
-      markReady();
-      appendConsole("[+] تم تحديث الملفات المخزنة.");
+      setReady();
+      appendConsole("[+] تم تحديث الكاش بالكامل (100%).");
       try { window.applicationCache.swapCache(); } catch (e) {}
     };
 
     window.applicationCache.onerror = function () {
-      // تج τις المعوقات عند 89% أو 90% وتحويل الحالة لمستعد
-      markReady();
-      appendConsole("[+] تم اعتماد التخزين السريع للواجهة.");
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        setReady();
+        appendConsole("[+] تم التثبيت المباشر عبر Service Worker.");
+      }
     };
   }
 });
