@@ -1,10 +1,12 @@
 CACHE MANIFEST
-# v1.0.2 - HIGH TECH 11.00 FW
+# v1.0.3 - HIGH TECH PS4 11.00 Host
+# Updated: 2026
 
 CACHE:
 index.html
 background.png
 sw.js
 
+# Network fallback (يتيح اتصال الإنترنت إذا كان متوفراً دون إيقاف الكاش)
 NETWORK:
 *
