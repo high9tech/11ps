@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# v9.0.0 - HIGH TECH PS Minimal Safe Manifest
+# v10.0.0 - HIGH TECH PS FULL OFFLINE
 
 index.html
 background.png
@@ -9,6 +9,19 @@ includes/style.css
 includes/script.js
 includes/cat.jpg
 src/main.js
+src/loader.js
+src/lapse.js
+src/misc.js
+src/netctrl.js
+src/payload.bin
+src/utils.mjs
+src/worker.js
+src/workers.js
+src/ps4/constants.js
+src/ps4/kernel.js
+src/ps4/offsets.mjs
+src/ps4/userland.js
+src/ps4/userland.mjs
 
 NETWORK:
 *
