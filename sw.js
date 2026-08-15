@@ -1,6 +1,6 @@
-const CACHE_NAME = 'hightech-ps-v9';
+const CACHE_NAME = 'hightech-ps-offline-v10';
 
-const CORE_ASSETS = [
+const ASSETS = [
   './',
   './index.html',
   './includes/style.css',
@@ -16,9 +16,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return Promise.allSettled(
-        CORE_ASSETS.map((asset) => cache.add(asset))
-      );
+      return cache.addAll(ASSETS);
     })
   );
 });
@@ -37,22 +35,16 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// التعامل مع طلبات التصفح أوفلاين
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
-      return fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
-        }
-        return networkResponse;
-      }).catch(() => {
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
+      return fetch(event.request).catch(() => {
+        // عند انقطاع الإنترنت تماماً، يتم إرجاع الصفحة الرئيسية المخزنة
+        return caches.match('./index.html') || caches.match('./');
       });
     })
   );
