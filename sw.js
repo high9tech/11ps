@@ -1,25 +1,11 @@
-const CACHE_NAME = 'hightech-ps-v4';
+const CACHE_NAME = 'hightech-v5';
 
-// تثبيت المتصفح وتخزين الملفات تلقائياً
+// تثبيت الخدمة
 self.addEventListener('install', (event) => {
   self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll([
-        './',
-        'index.html',
-        'background.png',
-        'manifest.json',
-        'README.md',
-        'includes/style.css',
-        'includes/script.js',
-        'includes/applicationCache.js'
-      ]);
-    })
-  );
 });
 
-// تنشيط الكاش وتحديث النسخ القديمة
+// تنشيط وتطهير النسخ القديمة
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -34,15 +20,18 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// تشغيل الملفات من الذاكرة عند قطع النت
+// التخزين التلقائي والديناميكي عند فتح الملفات لأول مرة
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
+    caches.match(event.request).then((cachedResponse) => {
+      // إرجاع الملف فوراً إن كان مخزناً مسبقاً
       if (cachedResponse) {
         return cachedResponse;
       }
+
+      // جلبه من الشبكة وتخزينه أوفلاين للمرات القادمة
       return fetch(event.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
@@ -52,7 +41,8 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       }).catch(() => {
-        return caches.match('index.html');
+        // في حالة الأوفلاين التام وعدم وجود الملف
+        return caches.match('./index.html') || caches.match('index.html');
       });
     })
   );
