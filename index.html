@@ -43,9 +43,9 @@
     <pre id="console" class="console-box">Ready. Awaiting execution...</pre>
   </div>
 
-  <!-- Core Scripts -->
-  <script src="src/main.js"></script>
-  <script src="includes/script.js"></script>
+  <!-- Core Scripts (مسارات نسبية آمنة + معالجة غياب الملفات) -->
+  <script src="./src/main.js" onerror="console.warn('تنبيه: لم يتم العثور على src/main.js');"></script>
+  <script src="./includes/script.js" onerror="console.warn('تنبيه: لم يتم العثور على includes/script.js');"></script>
 
   <!-- Service Worker Registration -->
   <script>
@@ -64,21 +64,15 @@
           .then(function(reg) {
             updateProgress(70, 'CACHING FILES FOR OFFLINE...');
 
-            // في حال كان الكاش جاهزاً ومفعلاً مسبقاً
             if (reg.active) {
               updateProgress(100, 'OFFLINE CACHE ACTIVE & READY');
             }
 
-            // الاستماع لتغيرات حالة الخدمة لضمان التحديث عند الانتهاء
             reg.onupdatefound = function() {
               var installingWorker = reg.installing;
               installingWorker.onstatechange = function() {
                 if (installingWorker.state === 'installed') {
-                  if (navigator.serviceWorker.controller) {
-                    updateProgress(100, 'OFFLINE CACHE UPDATED');
-                  } else {
-                    updateProgress(100, 'OFFLINE CACHE ACTIVE & READY');
-                  }
+                  updateProgress(100, 'OFFLINE CACHE ACTIVE & READY');
                 }
               };
             };
