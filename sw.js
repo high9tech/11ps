@@ -1,11 +1,10 @@
-const CACHE_NAME = 'hightech-ps-v2.0';
+const CACHE_NAME = 'hightech-ps-sw-v1';
 
 const ASSETS = [
   './',
   'index.html',
   'background.png',
   'manifest.json',
-  'sw.js',
   'README.md',
   'includes/style.css',
   'includes/script.js',
@@ -49,6 +48,7 @@ const ASSETS = [
   'lapsus/rop/ps4/850.mjs',
   'lapsus/rop/ps4/900.mjs',
   'lapsus/rop/ps4/950.mjs',
+  'lapsus/Exploit Host Server v1.0.exe',
   'lapsus/about.html',
   'lapsus/alert.mjs',
   'lapsus/config.mjs',
@@ -100,57 +100,48 @@ const ASSETS = [
   'src/ps4/offsets.mjs',
   'src/ps4/userland.js',
   'src/ps4/userland.mjs',
-  'src/patches/1000.bin',
-  'src/patches/1050.bin',
-  'src/patches/1100.bin',
-  'src/patches/1102.bin',
-  'src/patches/600.bin',
-  'src/patches/620.bin',
-  'src/patches/650.bin',
-  'src/patches/670.bin',
-  'src/patches/700.bin',
-  'src/patches/750.bin',
-  'src/patches/800.bin',
-  'src/patches/850.bin',
-  'src/patches/900.bin',
-  'src/patches/903.bin',
-  'src/patches/950.bin'
+  'src/ps4/patches/1000.bin',
+  'src/ps4/patches/1050.bin',
+  'src/ps4/patches/1100.bin',
+  'src/ps4/patches/1102.bin',
+  'src/ps4/patches/600.bin',
+  'src/ps4/patches/620.bin',
+  'src/ps4/patches/650.bin',
+  'src/ps4/patches/670.bin',
+  'src/ps4/patches/700.bin',
+  'src/ps4/patches/750.bin',
+  'src/ps4/patches/800.bin',
+  'src/ps4/patches/850.bin',
+  'src/ps4/patches/900.bin',
+  'src/ps4/patches/903.bin',
+  'src/ps4/patches/950.bin'
 ];
 
-self.addEventListener('install', function(event) {
+self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
 });
 
-self.addEventListener('activate', function(event) {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(function(keys) {
+    caches.keys().then((keys) => {
       return Promise.all(
-        keys.map(function(key) {
+        keys.map((key) => {
           if (key !== CACHE_NAME) {
             return caches.delete(key);
           }
         })
       );
-    }).then(function() {
-      return self.clients.claim();
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request, { ignoreSearch: true }).then(function(cachedResponse) {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).catch(function() {
-        return caches.match('index.html');
-      });
+    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request).catch(() => caches.match('index.html'));
     })
   );
 });
