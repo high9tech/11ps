@@ -1,5 +1,6 @@
-const CACHE_NAME = 'hightech-ps-sw-v1';
+const CACHE_NAME = 'hightech-ps-v2';
 
+// قائمة جميع ملفات المشروع بالمسارات النسبية
 const ASSETS = [
   './',
   'index.html',
@@ -117,13 +118,20 @@ const ASSETS = [
   'src/ps4/patches/950.bin'
 ];
 
+// مرحلة التثبيت والتخزين المعتمد
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      // تخزين الملفات بشكل آمن لضمان عدم إخفاق التثبيت إذا تعذر ملف واحد
+      return Promise.allSettled(
+        ASSETS.map((asset) => cache.add(asset))
+      );
+    })
   );
 });
 
+// مرحلة التنشيط وتنظيف النسخ القديمة
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -138,10 +146,29 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// اعتراض الطلبات واستخراجها من الكاش عند انقطاع النت
 self.addEventListener('fetch', (event) => {
+  // تجاهل الطلبات غير الخاصة بـ GET
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request).catch(() => caches.match('index.html'));
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(event.request).then((networkResponse) => {
+        // التأكد من صحة الاستجابة قبل إضافتها للكاش ديناميكياً
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      }).catch(() => {
+        // العودة للصفحة الرئيسية أوفلاين في حال فشل الاتصال بالشبكة
+        return caches.match('index.html');
+      });
     })
   );
 });
