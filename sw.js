@@ -1,49 +1,49 @@
-const CACHE_NAME = 'hightech-v5';
+const CACHE_NAME = 'hightech-v1';
 
-// تثبيت الخدمة
-self.addEventListener('install', (event) => {
+// الملفات الأساسية التي سيتم حفظها فوراً
+const FILES_TO_CACHE = [
+  './',
+  'index.html',
+  'background.png',
+  'manifest.json',
+  'includes/style.css',
+  'includes/script.js'
+];
+
+// حفظ الملفات عند أول فتح للموقع
+self.addEventListener('install', (e) => {
   self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
+  );
 });
 
-// تنشيط وتطهير النسخ القديمة
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
+// تفعيل الخدمة وتنظيف الكاش القديم
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
+          if (key !== CACHE_NAME) return caches.delete(key);
         })
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// التخزين التلقائي والديناميكي عند فتح الملفات لأول مرة
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // إرجاع الملف فوراً إن كان مخزناً مسبقاً
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      // جلبه من الشبكة وتخزينه أوفلاين للمرات القادمة
-      return fetch(event.request).then((networkResponse) => {
+// قراءة الملفات من الذاكرة عند فصل النت
+self.addEventListener('fetch', (e) => {
+  if (e.request.method !== 'GET') return;
+  e.respondWith(
+    caches.match(e.request).then((cachedResponse) => {
+      if (cachedResponse) return cachedResponse;
+      return fetch(e.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, responseToCache));
         }
         return networkResponse;
-      }).catch(() => {
-        // في حالة الأوفلاين التام وعدم وجود الملف
-        return caches.match('./index.html') || caches.match('index.html');
-      });
+      }).catch(() => caches.match('index.html'));
     })
   );
 });
