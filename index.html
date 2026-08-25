@@ -16,7 +16,7 @@
 
   <!-- شريط تقدم التحميل -->
   <div id="top-progress-container">
-    <div id="top-progress-bar"></div>
+    <div id="top-progress-bar" style="width: 0%;"></div>
     <span id="top-progress-text">0% - INITIALIZING SERVICE WORKER...</span>
   </div>
 
@@ -49,23 +49,44 @@
 
   <!-- Service Worker Registration -->
   <script>
+    function updateProgress(percent, statusText) {
+      var bar = document.getElementById('top-progress-bar');
+      var text = document.getElementById('top-progress-text');
+      if (bar) bar.style.width = percent + '%';
+      if (text) text.textContent = percent + '% - ' + statusText;
+    }
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
+        updateProgress(30, 'REGISTERING SERVICE WORKER...');
+        
         navigator.serviceWorker.register('./sw.js')
           .then(function(reg) {
-            var bar = document.getElementById('top-progress-bar');
-            var text = document.getElementById('top-progress-text');
-            if (bar && text) {
-              bar.style.width = '100%';
-              text.textContent = '100% - SERVICE WORKER READY (OFFLINE ACTIVE)';
+            updateProgress(70, 'CACHING FILES FOR OFFLINE...');
+
+            // في حال كان الكاش جاهزاً ومفعلاً مسبقاً
+            if (reg.active) {
+              updateProgress(100, 'OFFLINE CACHE ACTIVE & READY');
             }
+
+            // الاستماع لتغيرات حالة الخدمة لضمان التحديث عند الانتهاء
+            reg.onupdatefound = function() {
+              var installingWorker = reg.installing;
+              installingWorker.onstatechange = function() {
+                if (installingWorker.state === 'installed') {
+                  if (navigator.serviceWorker.controller) {
+                    updateProgress(100, 'OFFLINE CACHE UPDATED');
+                  } else {
+                    updateProgress(100, 'OFFLINE CACHE ACTIVE & READY');
+                  }
+                }
+              };
+            };
           })
           .catch(function(err) {
             console.error('ServiceWorker registration failed:', err);
             var text = document.getElementById('top-progress-text');
-            if (text) {
-              text.textContent = 'SERVICE WORKER ERROR!';
-            }
+            if (text) text.textContent = 'SERVICE WORKER ERROR!';
           });
       });
     }
