@@ -4,24 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HIGH TECH PS - Host</title>
+
+  <!-- Web App Manifest -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d4af37">
+
+  <!-- Style Sheets -->
   <link rel="stylesheet" href="includes/style.css">
+
+  <!-- Application Cache Events -->
   <script src="includes/applicationCache.js"></script>
 </head>
 <body>
 
+  <!-- شريط تقدم التحميل الأوفلاين والكاش -->
   <div id="top-progress-container">
     <div id="top-progress-bar"></div>
     <span id="top-progress-text">0% - INITIALIZING CACHE...</span>
   </div>
 
+  <!-- خلفية الصفحة -->
   <div class="full-bg">
     <img src="background.png" alt="HIGH TECH PS" onerror="this.style.display='none';">
   </div>
 
+  <!-- طبقة التظليل -->
   <div class="overlay"></div>
 
+  <!-- الواجهة الرئيسية -->
   <div class="main-card">
     <button class="seal-btn" id="masterBtn">
       <div class="seal-inner">
@@ -32,15 +42,25 @@
       </div>
     </button>
 
+    <!-- شاشة إظهار السجلات والتنبيهات -->
     <pre id="console" class="console-box">Ready. Awaiting execution...</pre>
   </div>
 
+  <!-- Core Scripts -->
   <script src="src/main.js"></script>
   <script src="includes/script.js"></script>
+
+  <!-- Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('sw.js');
+        navigator.serviceWorker.register('sw.js')
+          .then(function(reg) {
+            console.log('ServiceWorker registered with scope:', reg.scope);
+          })
+          .catch(function(err) {
+            console.log('ServiceWorker registration failed:', err);
+          });
       });
     }
   </script>
